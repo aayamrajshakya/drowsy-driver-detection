@@ -20,7 +20,7 @@ url_3 = requests.get("https://source.roboflow.com/Y756mSC6kpZqdTzOg6u299tKXxg1/1
 img_3 = Image.open(BytesIO(url_3.content))
 
 def classify_image(Image):
-    img = np.resize(Image, (224, 224, 3))
+    img = Image.resize((224, 224))
     img_array = tf.keras.preprocessing.image.img_to_array(img)
     img_array = np.expand_dims(img_array, axis=0)
     img_array /= 255.0
@@ -29,7 +29,7 @@ def classify_image(Image):
     return f"Raw score: {np.round(raw_pred.item(), 4)}\nClass: {class_names[pred]}"
 
 gr.Interface(fn = classify_image,
-             inputs=gr.Image(width=224, height=224),
+             inputs=gr.Image(type="pil"),
              outputs=gr.Textbox(label="Answer"),
              title="Driver Drowsiness Detection",
              examples = [img_1, img_2, img_3]).launch(debug=True)

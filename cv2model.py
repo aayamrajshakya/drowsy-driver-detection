@@ -34,6 +34,7 @@ while True:
     if len(faces) == 0:
         print("\033[1;33mNo face detected\033[0m")
 
+    drowsy_detected = False
     # Draw bounding boxes around detected faces
     for (x, y, w, h) in faces:
         cv2.rectangle(flipped_frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
@@ -45,17 +46,15 @@ while True:
         img = tf.cast(img, tf.float32) / 255.0   # Normalizing to match training standard
         img = np.expand_dims(img, axis=0)
 
-        raw_score = ensemble_model.predict(img)
+        # Use direct callable execution for lower inference latency on single frames
+        raw_score_tensor = ensemble_model(img, training=False)
+        raw_score = float(raw_score_tensor[0][0])
         bin_score = int(raw_score >= 0.5)
         predicted_class = class_names[bin_score]
-        raw_score_disp = round(float(raw_score), 4)  # Round score for display
+        raw_score_disp = round(raw_score, 4)
 
-        # Play sound if the predicted class is 'Drowsy'
         if predicted_class == "Drowsy":
-            if not play_obj or not play_obj.is_playing():
-                play_obj = wave_obj.play()
-        else:
-            play_obj = None
+            drowsy_detected = True
 
         # Terminal output
         color = "\033[1;32m" if raw_score >= 0.5 else "\033[1;31m"  # Red color if drowsy and green if not
@@ -65,6 +64,15 @@ while True:
         color = (0, 0, 255) if predicted_class == 'Drowsy' else (0, 255, 0)  # color order is BGR
         cv2.putText(flipped_frame, f"Raw score: {raw_score_disp}", (10, 20), font, 0.5, color, 1, cv2.LINE_AA)
         cv2.putText(flipped_frame, f"Predicted: {predicted_class}", (10, 40), font, 0.5, color, 1, cv2.LINE_AA)
+
+    # Manage audio alert play/stop state based on face detection and prediction
+    if drowsy_detected:
+        if not play_obj or not play_obj.is_playing():
+            play_obj = wave_obj.play()
+    else:
+        if play_obj and play_obj.is_playing():
+            play_obj.stop()
+        play_obj = None
 
     # Display the frame
     cv2.namedWindow('Real-time Driver Drowsiness Detection', cv2.WINDOW_NORMAL)
