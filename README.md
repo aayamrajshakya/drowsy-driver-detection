@@ -2,6 +2,16 @@
 
 This project implements a real-time driver drowsiness detection system using a stacking ensemble of pre-trained large CNNs and OpenCV.
 
+
+## Elevator Pitch 🎬
+
+<a href="https://www.youtube.com/watch?v=7zd7ujhZyNg" target="_blank">
+  <img src="https://img.youtube.com/vi/7zd7ujhZyNg/maxresdefault.jpg" alt="Driver Drowsiness Detection Video" max-width="100%" width="650" style="border-radius: 8px;" />
+</a>
+
+> Click the thumbnail above to watch the demo video on YouTube.
+
+
 ## Overview
 
 - Stacking ensemble of **DenseNet121**, **EfficientNetV2B2**, and **MobileNetV2**
@@ -9,6 +19,7 @@ This project implements a real-time driver drowsiness detection system using a s
 - Face detection is performed on a **real-time webcam feed** using OpenCV and Haar cascade classifier
 - **Continuous feeding** of extracted face frames to a trained TensorFlow model for drowsiness classification
 - **Audio alert** (`alert.wav`) activated upon drowsy state detection
+
 
 ## File structure
 
@@ -23,6 +34,7 @@ This project implements a real-time driver drowsiness detection system using a s
 ├── example.keras              # Sample pretrained model to use with cv2model.py
 └── gradio.py                  # Gradio GUI
 ```
+
 
 ## Installation
 
